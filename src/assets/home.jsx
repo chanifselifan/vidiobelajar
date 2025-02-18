@@ -1,10 +1,7 @@
-import React, { useState } from 'react'
-import CourseCard from './CourseCard.jsx'
-import { Link } from 'react-router-dom'
-import NavLogin from '../NavLogin'
-
-
-
+import React, { useState } from 'react';
+import CourseCard from './CourseCard.jsx';
+import { Link } from 'react-router-dom';
+import NavLogin from '../NavLogin';
 
 const Home = () => {
   // Data untuk cards
@@ -81,7 +78,7 @@ const Home = () => {
       price: "Rp 300K",
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3"
     }
-  ]
+  ];
 
   //  state
   const [activeCategory, setActiveCategory] = useState('Semua Kelas');
@@ -125,14 +122,16 @@ const Home = () => {
             <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 max-w-md sm:max-w-xl px-4 drop-shadow-md">
               Temukan ilmu baru yang menarik dan mendalam melalui koleksi video pembelajaran berkualitas tinggi.
             </p>
-            <button className="bg-green-500 hover:bg-green-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
-              Temukan Video Course untuk Dipelajari
-            </button>
+            <Link 
+              to="/semua-produk" 
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-all duration-300"
+            >
+              Lihat Semua Kursus
+            </Link>
           </div>
         </div>
 
-        
-        <div className="max-w-7xl mx-auto py-6 sm:py-8 md:py-12">
+        <div className="max-w-7xl mx-auto py-6 sm:py-8 md:py-12"></div>
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 px-4">
             Koleksi Video Pembelajaran Unggulan
           </h2>
@@ -163,6 +162,7 @@ const Home = () => {
             {courses.map((course) => (
               <CourseCard
                 key={course.id}
+                id={course.id}
                 title={course.title}
                 instructor={course.instructor}
                 rating={course.rating}
@@ -303,9 +303,8 @@ const Home = () => {
             </div>
           </div>
         </footer>
-      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

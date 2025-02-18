@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import NavLogin from '../NavLogin';
+import Frame3 from '../../img/Frame 3.png';
+import GoogleIcon from '../../img/logos_google-icon.png';
 
 function Login() {
   const navigate = useNavigate();
@@ -9,7 +11,6 @@ function Login() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  
   React.useEffect(() => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
       navigate('/');
@@ -20,15 +21,13 @@ function Login() {
     e.preventDefault();
     setError('');
 
-  
     const userData = JSON.parse(localStorage.getItem('userData'));
 
     if (!userData) {
       setError('User belum terdaftar');
-      return;
+     return;
     }
 
-    // Cek 
     if (email === userData.email && password === userData.password) {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', email);
@@ -43,25 +42,22 @@ function Login() {
       <NavLogin />
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-6 sm:space-y-8 p-6 sm:p-8 bg-white rounded-lg shadow-md">
-          {/* Logo */}
           <div className="flex justify-center">
             <Link to="/" className="block">
               <img
                 className="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300"
-                src='./img/Frame 3.png'
+                src={Frame3}
                 alt="videobelajar"
               />
             </Link>
           </div>
 
-          {/* Form */}
           <div className="mt-6 sm:mt-8">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-2">Masuk ke Akun</h2>
             <p className="text-sm sm:text-base text-center text-gray-600 mb-6 sm:mb-8">
               Yuk, lanjutin belajarmu di videobelajar
             </p>
 
-            {/* Error Message */}
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm sm:text-base">
                 {error}
@@ -69,7 +65,6 @@ function Login() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              {/* Email */}
               <div>
                 <label className="block text-sm sm:text-base font-medium text-gray-700">
                   E-Mail <span className="text-red-500">*</span>
@@ -84,7 +79,6 @@ function Login() {
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm sm:text-base font-medium text-gray-700">
                   Kata Sandi <span className="text-red-500">*</span>
@@ -112,7 +106,6 @@ function Login() {
                 </div>
               </div>
 
-              {/* Login  */}
               <button
                 type="submit"
                 className="w-full bg-green-500 text-white py-2 px-4 rounded-md text-sm sm:text-base hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
@@ -120,14 +113,12 @@ function Login() {
                 Masuk
               </button>
 
-              {/*  Link */}
               <div className="text-center text-sm sm:text-base">
                 <Link to="/register" className="text-green-500 hover:text-green-600 transition-colors duration-300">
                   Daftar
                 </Link>
               </div>
 
-              {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
@@ -137,12 +128,11 @@ function Login() {
                 </div>
               </div>
 
-              {/* Google Login */}
               <button
                 type="button"
                 className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 px-4 text-sm sm:text-base hover:bg-gray-50 transition-colors duration-300"
               >
-                <img src="./img/logos_google-icon.png" alt="Google" className="w-4 h-4 sm:w-5 sm:h-5" />
+                <img src={GoogleIcon} alt="Google" className="w-4 h-4 sm:w-5 sm:h-5" />
                 Masuk dengan Google
               </button>
             </form>
@@ -154,4 +144,3 @@ function Login() {
 }
 
 export default Login;
-

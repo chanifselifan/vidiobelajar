@@ -1,20 +1,30 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const CourseCard = ({ title, instructor, rating, price, image }) => {
+const CourseCard = ({ id, title, instructor, rating, price, originalPrice, image }) => {
+  const navigate = useNavigate();
+
+  const handleDetailClick = () => {
+    navigate(`/detail-produk/${id}`);
+  };
+
+  const handleBuyNowClick = () => {
+    navigate(`/detail-produk/${id}`, { state: { title, instructor, rating, price, image } });
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
-      {/* Card gambar */}
-      <div className="relative h-40 sm:h-48 md:h-56">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border border-gray-100">
+      {/* Card Image dengan overlay gradient */}
+      <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
         <img 
           src={image} 
-          alt={title} 
-          className="w-full h-full object-cover"
+          alt={title}
+          className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
         />
       </div>
 
       {/* Card Content */}
-      <div className="p-4 sm:p-5">
+      <div className="p-5">
         {/* Title */}
         <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
           {title}
@@ -48,17 +58,21 @@ const CourseCard = ({ title, instructor, rating, price, image }) => {
           </span>
         </div>
 
-        {/* Harga & Action */}
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-sm sm:text-base font-bold text-green-600">
-            {price}
-          </span>
-          <Link 
-            to="/" 
-            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-orange-500 text-white text-xs sm:text-sm rounded-lg hover:bg-orange-600 transition-colors duration-300"
+        {/* Price & Action */}
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-green-600 whitespace-nowrap">
+              {price}
+            </span>
+            <span className="text-gray-500 line-through ml-2">{originalPrice}</span>
+          </div>
+         
+          <button 
+            onClick={handleBuyNowClick}
+            className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
           >
-            Lihat Detail
-          </Link>
+            Buy Now
+          </button>
         </div>
       </div>
     </div>

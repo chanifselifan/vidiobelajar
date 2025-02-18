@@ -14,25 +14,31 @@ const NavLogin = () => {
             <Link to="/">
               <img
                 className="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300"
-                src="./img/Frame 3.png"
+                src="/img/Frame 3.png"
                 alt="Logo"
               />
             </Link>
           </div>
 
-          {/* Desktop  */}
+          {/* Desktop Navigation */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4 md:space-x-6">
             <Link
               to="/"
-              className="text-gray-600 hover:text-orange-500 px-3 py-2 text-sm md:text-base font-medium transition-colors duration-300"
+              className="text-gray-600 hover:text-green-500 px-3 py-2 text-sm md:text-base font-medium transition-colors duration-300"
             >
               Beranda
             </Link>
             <Link
               to="/courses"
-              className="text-gray-600 hover:text-orange-500 px-3 py-2 text-sm md:text-base font-medium transition-colors duration-300"
+              className="text-gray-600 hover:text-green-500 px-3 py-2 text-sm md:text-base font-medium transition-colors duration-300"
             >
               Kursus
+            </Link>
+            <Link
+              to="/semua-produk"
+              className="text-gray-600 hover:text-green-500 px-3 py-2 text-sm md:text-base font-medium transition-colors duration-300"
+            >
+              Kategori
             </Link>
             {isLoggedIn ? (
               <button
@@ -40,14 +46,14 @@ const NavLogin = () => {
                   localStorage.removeItem('isLoggedIn');
                   window.location.reload();
                 }}
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm md:text-base hover:bg-orange-600 transition-all duration-300 transform hover:scale-105"
+                className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm md:text-base hover:bg-green-600 transition-all duration-300 transform hover:scale-105"
               >
                 Keluar
               </button>
             ) : (
               <Link
                 to="/login"
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm md:text-base hover:bg-orange-600 transition-all duration-300 transform hover:scale-105"
+                className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm md:text-base hover:bg-green-600 transition-all duration-300 transform hover:scale-105"
               >
                 Masuk
               </Link>
@@ -100,6 +106,12 @@ const NavLogin = () => {
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-orange-500 hover:bg-gray-50 transition-colors duration-300"
           >
             Kursus
+          </Link>
+          <Link
+            to="/semua-produk"
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-orange-500 hover:bg-gray-50 transition-colors duration-300"
+          >
+            Kategori
           </Link>
           {isLoggedIn ? (
             <button

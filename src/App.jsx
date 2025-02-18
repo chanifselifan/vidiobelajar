@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import './index.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './assets/login.jsx';
-import Register from './assets/Register.jsx';
-import Home from './assets/home.jsx';
+import Login from './assets/Login.jsx';
+import Home from './assets/Home.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -26,7 +25,6 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
       </Routes>
     </div>
   );
