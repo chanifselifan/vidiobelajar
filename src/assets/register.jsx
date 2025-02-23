@@ -1,53 +1,79 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import NavLogin from '../NavLogin';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import NavLogin from "../NavLogin";
 
 function Register() {
+  const API_URL = "/api/users";
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    namaLengkap: '',
-    email: '',
-    jenisKelamin: '',
-    noHp: '',
-    password: '',
-    konfirmasiPassword: ''
+    namaLengkap: "",
+    email: "",
+    jenisKelamin: "",
+    noHp: "",
+    password: "",
+    konfirmasiPassword: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState([]);
   const [showKonfirmasiPassword, setShowKonfirmasiPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => setData(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validasi
-    if (!formData.namaLengkap || !formData.email || !formData.password || !formData.konfirmasiPassword) {
-      setError('Semua field harus diisi');
+    if (
+      !formData.namaLengkap ||
+      !formData.email ||
+      !formData.password ||
+      !formData.konfirmasiPassword
+    ) {
+      setError("Semua field harus diisi");
       return;
     }
 
     if (formData.password !== formData.konfirmasiPassword) {
-      setError('Password tidak cocok');
+      setError("Password tidak cocok");
       return;
     }
 
     try {
-      //  data user
-      localStorage.setItem('userData', JSON.stringify(formData));
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', formData.email);
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const newUser = await response.json();
+      setData([...data, newUser]);
+
+      // Simpan data user di localStorage
+      localStorage.setItem("userData", JSON.stringify(formData));
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userEmail", formData.email);
 
       // Redirect ke home
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      setError('Terjadi kesalahan saat mendaftar');
+      setError("Terjadi kesalahan saat mendaftar");
     }
   };
 
@@ -58,12 +84,14 @@ function Register() {
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
           {/* Logo */}
           <div className="text-center">
-          <h1 className="text-2xl font-bold text-orange-500">videobelajar</h1>
+            <h1 className="text-2xl font-bold text-orange-500">videobelajar</h1>
           </div>
 
           {/* Form */}
           <div className="mt-8">
-            <h2 className="text-2xl font-bold text-center mb-2">Pendaftaran Akun</h2>
+            <h2 className="text-2xl font-bold text-center mb-2">
+              Pendaftaran Akun
+            </h2>
             <p className="text-center text-gray-600 mb-8">
               Yuk, daftarkan akunmu sekarang juga!
             </p>
@@ -129,9 +157,7 @@ function Register() {
                   No. Hp <span className="text-red-500">*</span>
                 </label>
                 <div className="flex">
-                  <select
-                    className="mt-1 block w-24 rounded-l-md border border-gray-300 px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-green-500"
-                  >
+                  <select className="mt-1 block w-24 rounded-l-md border border-gray-300 px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-green-500">
                     <option value="+62">+62</option>
                   </select>
                   <input
@@ -185,7 +211,9 @@ function Register() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowKonfirmasiPassword(!showKonfirmasiPassword)}
+                    onClick={() =>
+                      setShowKonfirmasiPassword(!showKonfirmasiPassword)
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2"
                   >
                     {showKonfirmasiPassword ? "👁️" : "👁️‍🗨️"}
@@ -203,7 +231,10 @@ function Register() {
 
               {/* Login  */}
               <div className="text-center">
-                <Link to="/login" className="text-green-500 hover:text-green-600">
+                <Link
+                  to="/login"
+                  className="text-green-500 hover:text-green-600"
+                >
                   Masuk
                 </Link>
               </div>
@@ -223,7 +254,11 @@ function Register() {
                 type="button"
                 className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 px-4 hover:bg-gray-50"
               >
-                <img src="./img/logos_google-icon.png" alt="Google" className="w-5 h-5" />
+                <img
+                  src="./img/logos_google-icon.png"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
                 Daftar dengan Google
               </button>
             </form>
@@ -235,4 +270,3 @@ function Register() {
 }
 
 export default Register;
-

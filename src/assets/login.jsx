@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import NavLogin from '../NavLogin';
 import Frame3 from '../../img/Frame 3.png';
 import GoogleIcon from '../../img/logos_google-icon.png';
+import axios from 'axios';
 
 function Login() {
+  const API_URL = "/api/users";
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,23 +19,26 @@ function Login() {
     }
   }, [navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    const userData = JSON.parse(localStorage.getItem('userData'));
+    try {
+      const response = await axios.get(`${API_URL}/${email}`);
+      if (response.status === 404) {
+        throw new Error('User not found');
+      }
+      const userData = response.data;
 
-    if (!userData) {
+      if (userData && userData.password === password) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', email);
+        navigate('/');
+      } else {
+        setError('Email atau password salah');
+      }
+    } catch (error) {
       setError('User belum terdaftar');
-     return;
-    }
-
-    if (email === userData.email && password === userData.password) {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', email);
-      navigate('/');
-    } else {
-      setError('Email atau password salah');
     }
   };
 
