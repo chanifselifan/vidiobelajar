@@ -43,7 +43,7 @@ function Register() {
 
     try {
       // Simpan data user ke Firestore
-      await addDoc(collection(db, "users"), {
+      const docRef = await addDoc(collection(db, "users"), {
         namaLengkap: formData.namaLengkap,
         email: formData.email,
         jenisKelamin: formData.jenisKelamin,
@@ -54,6 +54,7 @@ function Register() {
       localStorage.setItem('userData', JSON.stringify(formData));
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', formData.email);
+      localStorage.setItem('userId', docRef.id);
 
       // Redirect ke home
       navigate('/');

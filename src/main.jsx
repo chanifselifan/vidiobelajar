@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './assets/login.jsx'; // Updated to correct casing
+import Login from './assets/login'; // Updated to correct casing
 import Register from './assets/register.jsx';
 import Home from './assets/home.jsx'; // Updated to correct casing
 import SemuaProduk from './assets/SemuaProduk.jsx';

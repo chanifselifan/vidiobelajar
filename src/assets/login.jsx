@@ -5,7 +5,7 @@ import Frame3 from '../../img/Frame 3.png';
 import GoogleIcon from '../../img/logos_google-icon.png';
 import axios from 'axios';
 
-function Login() {
+const Login = () => {
   const API_URL = "/api/users";
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
