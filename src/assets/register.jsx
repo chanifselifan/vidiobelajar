@@ -1,79 +1,64 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import NavLogin from "../NavLogin";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import NavLogin from '../NavLogin';
+import { db } from '../firebase';
+import { collection, addDoc } from "firebase/firestore";
 
 function Register() {
-  const API_URL = "/api/users";
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    namaLengkap: "",
-    email: "",
-    jenisKelamin: "",
-    noHp: "",
-    password: "",
-    konfirmasiPassword: "",
+    namaLengkap: '',
+    email: '',
+    jenisKelamin: '',
+    noHp: '',
+    password: '',
+    konfirmasiPassword: ''
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [data, setData] = useState([]);
   const [showKonfirmasiPassword, setShowKonfirmasiPassword] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((err) => console.error(err));
-  }, []);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     // Validasi
-    if (
-      !formData.namaLengkap ||
-      !formData.email ||
-      !formData.password ||
-      !formData.konfirmasiPassword
-    ) {
-      setError("Semua field harus diisi");
+    if (!formData.namaLengkap || !formData.email || !formData.password || !formData.konfirmasiPassword) {
+      setError('Semua field harus diisi');
       return;
     }
 
     if (formData.password !== formData.konfirmasiPassword) {
-      setError("Password tidak cocok");
+      setError('Password tidak cocok');
       return;
     }
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      // Simpan data user ke Firestore
+      await addDoc(collection(db, "users"), {
+        namaLengkap: formData.namaLengkap,
+        email: formData.email,
+        jenisKelamin: formData.jenisKelamin,
+        noHp: formData.noHp
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const newUser = await response.json();
-      setData([...data, newUser]);
 
-      // Simpan data user di localStorage
-      localStorage.setItem("userData", JSON.stringify(formData));
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userEmail", formData.email);
+      // Simpan data user ke localStorage
+      localStorage.setItem('userData', JSON.stringify(formData));
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', formData.email);
 
       // Redirect ke home
-      navigate("/");
+      navigate('/');
     } catch (err) {
-      setError("Terjadi kesalahan saat mendaftar");
+      setError('Terjadi kesalahan saat mendaftar');
     }
   };
 
@@ -89,9 +74,7 @@ function Register() {
 
           {/* Form */}
           <div className="mt-8">
-            <h2 className="text-2xl font-bold text-center mb-2">
-              Pendaftaran Akun
-            </h2>
+            <h2 className="text-2xl font-bold text-center mb-2">Pendaftaran Akun</h2>
             <p className="text-center text-gray-600 mb-8">
               Yuk, daftarkan akunmu sekarang juga!
             </p>
