@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './index.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './assets/Login.jsx';
-import Home from './assets/Home.jsx';
+import Login from './assets/login.jsx';
+import Home from './assets/home.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

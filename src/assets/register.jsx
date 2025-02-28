@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import NavLogin from '../NavLogin';
+import { db } from '../firebase';
+import { collection, addDoc } from "firebase/firestore";
 
 function Register() {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -39,10 +41,19 @@ function Register() {
     }
 
     try {
-      //  data user
+      // Simpan data user ke Firestore
+      const docRef = await addDoc(collection(db, "users"), {
+        namaLengkap: formData.namaLengkap,
+        email: formData.email,
+        jenisKelamin: formData.jenisKelamin,
+        noHp: formData.noHp
+      });
+
+      // Simpan data user ke localStorage
       localStorage.setItem('userData', JSON.stringify(formData));
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', formData.email);
+      localStorage.setItem('userId', docRef.id); // Simpan ID dokumen
 
       // Redirect ke home
       navigate('/');
@@ -58,7 +69,7 @@ function Register() {
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
           {/* Logo */}
           <div className="text-center">
-          <h1 className="text-2xl font-bold text-orange-500">videobelajar</h1>
+            <h1 className="text-2xl font-bold text-orange-500">videobelajar</h1>
           </div>
 
           {/* Form */}

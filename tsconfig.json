@@ -9,8 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "rootDir": "./src", // Set rootDir to the src directory
-    "allowJs": true
+    // "rootDir": "./src", // Set rootDir to the src directory
+    "allowJs": true,
+    "outDir": "./dist",
 
   },
   "include": [
