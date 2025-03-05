@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import NavLogin from '../NavLogin';
-import { db } from '../firebase';
+import { db } from '../reducers/firebase';
 import { collection, addDoc } from "firebase/firestore";
 
 function Register() {

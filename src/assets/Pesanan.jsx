@@ -16,33 +16,33 @@ const Pesanan = () => {
       waktu: '10 Juni 2023, 14:17',
       status: 'Berhasil',
       kursus: {
-        title: 'Belajar Microsoft Office dan Google Workspace untuk Pemula',
-        image: '/img/office.png',
-        harga: 'Rp 300.000'
+        title: 'Digital Marketing Mastery',
+        image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3',
+        harga: 'Rp 350.000'
       },
-      totalPembayaran: 'Rp 300.000'
+      totalPembayaran: 'Rp 350.000'
     },
     {
       id: 'HEL/V1/10062023',
       waktu: '10 Juni 2023, 14:17',
       status: 'Gagal',
       kursus: {
-        title: 'Belajar Microsoft Office dan Google Workspace untuk Pemula',
-        image: '/img/office.png',
-        harga: 'Rp 300.000'
+        title: 'Graphic Design Essentials',
+        image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3',
+        harga: 'Rp 400.000'
       },
-      totalPembayaran: 'Rp 300.000'
+      totalPembayaran: 'Rp 400.000'
     },
     {
       id: 'HEL/V1/10062023',
       waktu: '10 Juni 2023, 14:17',
       status: 'Belum Bayar',
       kursus: {
-        title: 'Belajar Microsoft Office dan Google Workspace untuk Pemula',
-        image: '/img/office.png',
-        harga: 'Rp 300.000'
+        title: 'Self Development Workshop',
+        image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3',
+        harga: 'Rp 250.000'
       },
-      totalPembayaran: 'Rp 300.000'
+      totalPembayaran: 'Rp 250.000'
     }
   ];
 
@@ -172,7 +172,7 @@ const Pesanan = () => {
                     </span>
                   </div>
                   <div className="flex gap-4">
-                    <img src={pesanan.kursus.image} alt={pesanan.kursus.title} className="w-20 h-20 rounded-lg object-cover" />
+                    <img src={pesanan.kursus.image} alt={pesanan.kursus.title} className="w-16 h-16 rounded-lg object-cover" />
                     <div className="flex-1">
                       <h3 className="font-medium mb-2">{pesanan.kursus.title}</h3>
                       <div className="flex justify-between">

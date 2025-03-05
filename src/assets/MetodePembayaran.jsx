@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedProduct } from '../reducers/filterSlice';
 
 const MetodePembayaran = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const courseData = location.state?.courseData || {
-    title: "Gapai Karier Impianmu sebagai Seorang UI/UX Designer & Product Manager",
-    price: "Rp 250K",
-    originalPrice: "Rp 500K",
-    image: "/img/Rectangle 22957 (5).png"
-  };
-
-  const [selectedBank, setSelectedBank] = useState('');
+  const dispatch = useDispatch();
+  const { product, price, totalPrice } = location.state || {};
+  const { selectedProduct } = useSelector((state) => state.filter);
+  const [selectedPayment, setSelectedPayment] = useState('bca');
   const [isTransferOpen, setIsTransferOpen] = useState(true);
   const [isEWalletOpen, setIsEWalletOpen] = useState(false);
   const [isCardOpen, setIsCardOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState('bca');
+
+  useEffect(() => {
+    if (product) {
+      dispatch(setSelectedProduct(product));
+    }
+  }, [product, dispatch]);
 
   const handleBayarClick = () => {
     if (!selectedPayment) {
@@ -25,7 +28,7 @@ const MetodePembayaran = () => {
 
     navigate('/bayar', {
       state: {
-        courseData,
+        courseData: selectedProduct,
         paymentMethod: selectedPayment
       }
     });
@@ -285,10 +288,10 @@ const MetodePembayaran = () => {
                   className="w-32 h-32 object-cover rounded-lg"
                 />
                 <div>
-                  <h2 className="text-lg font-bold mb-2">{courseData.title}</h2>
+                  <h2 className="text-lg font-bold mb-2">{selectedProduct?.title}</h2>
                   <div className="flex items-center gap-2">
-                    <span className="text-green-600 font-bold">{courseData.price}</span>
-                    <span className="text-gray-400 line-through">{courseData.originalPrice}</span>
+                    <span className="text-green-600 font-bold">{price}</span>
+                    <span className="text-gray-400 line-through">{selectedProduct?.originalPrice}</span>
                     <span className="bg-orange-100 text-orange-500 px-2 py-1 rounded-full text-sm">
                       Diskon 50%
                     </span>
@@ -326,7 +329,7 @@ const MetodePembayaran = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Video Learning</span>
-                    <span>Rp 767.500</span>
+                    <span>{price}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Biaya Admin</span>
@@ -334,7 +337,7 @@ const MetodePembayaran = () => {
                   </div>
                   <div className="flex justify-between font-bold pt-2 border-t">
                     <span>Total Pembayaran</span>
-                    <span className="text-green-600">Rp 774.500</span>
+                    <span className="text-green-600">{totalPrice}</span>
                   </div>
                 </div>
               </div>
@@ -353,4 +356,4 @@ const MetodePembayaran = () => {
   );
 };
 
-export default MetodePembayaran; 
+export default MetodePembayaran;

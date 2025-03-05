@@ -1,32 +1,27 @@
 import React from 'react';
 import NavLogin from '../NavLogin';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import CourseCard from './CourseCard';
 
 const DetailProduk = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Example data (replace with data from API/database)
-  const courseData = {
-    title: "Gapai Karier Impianmu sebagai Seorang UI/UX Designer & Product Manager",
-    instructor: "Gregorius Erick Luwanto",
-    rating: 3.5,
-    price: "Rp 250K",
-    originalPrice: "Rp 400K",
-    image: "/img/course-hero.jpg",
-    description: "Foundations of User Experience (UX) Design adalah yang pertama dari rangkaian tujuh kursus...",
-  };
+  const location = useLocation();
+  const { title, instructor, rating, price, image } = location.state;
 
   const handleBuyClick = () => {
+    const adminFee = 7000;
+    const productPrice = parseInt(price.replace('Rp ', '').replace('K', '000'));
+    const totalPrice = productPrice + adminFee;
     navigate('/metode-pembayaran', { 
       state: { 
-        courseData: {
-          title: courseData.title,
-          price: courseData.price,
-          originalPrice: courseData.originalPrice,
-          image: courseData.image
-        }
+        product: {
+          title: title,
+          price: `Rp ${productPrice.toLocaleString('id-ID')}`,
+          image: image
+        },
+        price: `Rp ${productPrice.toLocaleString('id-ID')}`,
+        totalPrice: `Rp ${totalPrice.toLocaleString('id-ID')}`
       }
     });
   };
@@ -40,9 +35,9 @@ const DetailProduk = () => {
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Link to="/" className="hover:text-green-500">Beranda</Link>
           <span className="mx-2">/</span>
-          <Link to="/courses" className="hover:text-green-500">Desain</Link>
+          <Link to="/semua-produk" className="hover:text-green-500">Semua Produk</Link>
           <span className="mx-2">/</span>
-          <span className="text-gray-900">Gapai Karier Impianmu sebagai Seorang UI/UX Designer & Product Manager</span>
+          <span className="text-gray-900">{title}</span>
         </div>
       </div>
 
@@ -51,14 +46,14 @@ const DetailProduk = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="relative h-[200px] sm:h-[300px] md:h-[400px] rounded-lg overflow-hidden mb-6 sm:mb-8">
             <img 
-              src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3"
+              src={image}
               alt="Course Cover"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 sm:p-8">
               <div className="max-w-4xl text-center">
                 <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-4">
-                  Gapai Karier Impianmu sebagai Seorang UI/UX Designer & Product Manager.
+                  {title}
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-4 sm:mb-6">
                   Belajar bersama tutor profesional di Video Course. Kapanpun, di manapun.
@@ -67,14 +62,14 @@ const DetailProduk = () => {
                   {[...Array(5)].map((_, index) => (
                     <svg
                       key={index}
-                      className={`w-4 h-4 sm:w-5 sm:h-5 ${index < Math.floor(courseData.rating) ? 'text-yellow-400' : 'text-gray-400'}`}
+                      className={`w-4 h-4 sm:w-5 sm:h-5 ${index < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-400'}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                   ))}
-                  <span className="text-gray-400 text-sm sm:text-base">3.5 (86)</span>
+                  <span className="text-gray-400 text-sm sm:text-base">{rating} (86)</span>
                 </div>
               </div>
             </div>
@@ -299,19 +294,16 @@ const DetailProduk = () => {
           <div>
             {/* Course Card */}
             <CourseCard 
-              title={courseData.title}
-              instructor={courseData.instructor}
-              rating={courseData.rating}
-              price={courseData.price}
-              originalPrice={courseData.originalPrice}
-              image={courseData.image}
-               
+              title={title}
+              instructor={instructor}
+              rating={rating}
+              price={price}
+              image={image}
             />
             
-              <button onClick={handleBuyClick} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full w-full mt-4">
-                Buy Now
-              </button>
-            
+            <button onClick={handleBuyClick} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full w-full mt-4">
+              Buy Now
+            </button>
           </div>
         </div>
       </div>

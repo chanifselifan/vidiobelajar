@@ -21,15 +21,16 @@ const Kelas = () => {
         percent: 100
       },
       duration: '360 Menit',
-      modules: '12 Modul'
+      modules: '12 Modul',
+      image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3'
     },
     {
       id: 2,
-      title: 'Big 4 Auditor Financial Analyst',
+      title: 'Digital Marketing Mastery',
       description: 'Mulai transformasi dengan instruktur profesional, harga yang terjangkau, dan kurikulum terbaik',
       instructor: {
-        name: 'Jenna Ortega',
-        role: 'Senior Accountant di Gojek'
+        name: 'John Doe',
+        role: 'Senior Marketer di Tokopedia'
       },
       progress: {
         completed: 2,
@@ -38,7 +39,8 @@ const Kelas = () => {
         percent: 28
       },
       duration: '360 Menit',
-      modules: '12 Modul'
+      modules: '12 Modul',
+      image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3'
     }
   ];
 
@@ -137,7 +139,7 @@ const Kelas = () => {
               {kelasData.map((kelas) => (
                 <div key={kelas.id} className="border rounded-lg p-4">
                   <div className="flex gap-4">
-                    <img src="/img/course.png" alt={kelas.title} className="w-48 h-32 rounded-lg object-cover" />
+                    <img src={kelas.image} alt={kelas.title} className="w-24 h-16 rounded-lg object-cover" />
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -240,4 +242,4 @@ const Kelas = () => {
   );
 };
 
-export default Kelas; 
+export default Kelas;
