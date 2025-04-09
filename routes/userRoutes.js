@@ -1,54 +1,67 @@
 import express from 'express';
-import { getAllUsers, addUser, updateUser, deleteUser } from '../services/userService.js';
+import { updateUsers } from '../services/userService.js'; // Pastikan fungsi diimpor dengan benar
+import * as userService from '../services/userService.js';
 
 const router = express.Router();
 
-// GET /api/users - Mendapatkan semua data user
-router.get('/api/users', (req, res) => {
-    getAllUsers((err, users) => {
-        if (err) {
-            res.status(500).json({ error: 'Gagal mendapatkan data user' });
-        } else {
-            res.status(200).json(users);
-        }
-    });
+// GET /api/users - Mendapatkan semua data users
+router.get('/api/users', async (req, res) => {
+    try {
+        const users = await userService.getAllUsers();
+        res.status(200).json(users);
+    } catch (err) {
+        console.error('Error saat mendapatkan data users:', err.message);
+        res.status(500).json({ error: 'Terjadi kesalahan saat mendapatkan data users' });
+    }
 });
 
-// POST /api/users - Menambahkan user baru
-router.post('/api/users', (req, res) => {
-    const userData = req.body;
-    addUser(userData, (err, newUser) => {
-        if (err) {
-            res.status(500).json({ error: 'Gagal menambahkan user' });
-        } else {
-            res.status(201).json(newUser);
-        }
-    });
+// POST /api/users - Menambahkan users baru
+router.post('/api/users', async (req, res) => {
+    try {
+        const newUsers = await userService.addUsers(req.body);
+        res.status(201).json(newUsers);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// PATCH /api/users/:id - Mengubah data user berdasarkan ID
-router.patch('/api/users/:id', (req, res) => {
-    const id = req.params.id;
-    const userData = req.body;
-    updateUser(id, userData, (err, result) => {
-        if (err) {
-            res.status(500).json({ error: 'Gagal mengubah data user' });
-        } else {
-            res.status(200).json({ message: 'Data user berhasil diubah' });
-        }
-    });
+// PATCH /api/users/:id - Mengubah data users berdasarkan ID
+router.patch('/api/users/:id', async (req, res) => {
+    try {
+        const id = req.params.id; // Ambil ID dari parameter URL
+        const updatedData = req.body; // Ambil data yang akan diupdate dari body request
+        const updatedUser = await updateUsers(id, updatedData); // Panggil fungsi updateUsers
+        res.status(200).json({ message: 'Data user berhasil diubah', updatedUser });
+    } catch (err) {
+        console.error('Error saat mengupdate data user:', err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// DELETE /api/users/:id - Menghapus data user berdasarkan ID
-router.delete('/api/users/:id', (req, res) => {
-    const id = req.params.id;
-    deleteUser(id, (err, result) => {
-        if (err) {
-            res.status(500).json({ error: 'Gagal menghapus data user' });
+// DELETE /api/users/:id - Menghapus data users berdasarkan ID
+router.delete('/api/users/:id', async (req, res) => {
+    try {
+        const deletedUsers = await userService.deleteUsers(req.params.id);
+        res.status(200).json({ message: 'Data users berhasil dihapus', deletedUsers });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/users/:id - Mendapatkan data user berdasarkan ID
+router.get('/api/users/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const user = await userService.getUserById(id);
+        if (user) {
+            res.status(200).json(user);
         } else {
-            res.status(200).json({ message: 'Data user berhasil dihapus' });
+            res.status(404).json({ message: 'User tidak ditemukan' });
         }
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 export default router;

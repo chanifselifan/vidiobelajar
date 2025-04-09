@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './index.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './assets/Login.jsx';
+import Login from './assets/login';
 import Home from './assets/home.jsx';
 
 // Protected Route Component
