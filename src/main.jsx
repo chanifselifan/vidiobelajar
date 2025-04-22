@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './assets/Login'; // Updated to correct casing
+import Login from './assets/login'; 
 import Register from './assets/register.jsx';
-import Home from './assets/home.jsx'; // Updated to correct casing
+import Home from './assets/home.jsx'; 
 import SemuaProduk from './assets/SemuaProduk.jsx';
 import DetailProduk from './assets/DetailProduk.jsx';
 import MetodePembayaran from './assets/MetodePembayaran.jsx';
@@ -22,8 +22,9 @@ import Soal from './assets/Soal.jsx';
 import Rules from './assets/rules.jsx';
 import Tryagain from './assets/Tryagain.jsx';
 import Sertifikat from './assets/Sertifikat.jsx';
+import Dashboard from './components/Dashboard.jsx';
 import { Provider } from 'react-redux';
-import store from './reducers/store';
+import store from './reducers/store.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -51,6 +52,7 @@ root.render(
           <Route path="/Congrats" element={<Congrats />} />
           <Route path="/tryagain" element={<Tryagain />} />
           <Route path="/sertifikat" element={<Sertifikat />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
     </Provider>

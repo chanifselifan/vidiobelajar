@@ -1,58 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { setCategory, setDuration, setSearchQuery, setSortBy } from '../reducers/filterSlice';
 import CourseCard from './CourseCard';
 import NavLogin from '../NavLogin';
+import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { setCategory, setDuration, setSearchQuery, setSortBy, setSelectedProduct, setTotalPrice } from '../reducers/filterSlice';
 
 const SemuaProduk = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { category, duration, searchQuery, sortBy } = useSelector((state) => state.filter);
 
-  const categories = [
-    { id: 'bidang-studi', name: 'Bidang Studi', items: ['Pemasaran', 'Digital & Teknologi', 'Pengembangan Diri', 'Bisnis Manajemen'] },
-    { id: 'durasi', name: 'Durasi', items: ['Kurang dari 4 Jam', '4 - 8 Jam', 'Lebih dari 8 Jam'] },
-  ];
+  // Local state for backend data, loading, and error
+  const [backendCourses, setBackendCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const courses = [
-    { id: 1, title: "Big 4 Auditor Financial Analyst", instructor: "Jenna Ortega", rating: 3.5, price: "Rp 300K", duration: "Kurang dari 4 Jam", category: "Pemasaran", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3" },
-    { id: 2, title: "Digital Marketing", instructor: "John Doe", rating: 4.5, price: "Rp 200K", duration: "4 - 8 Jam", category: "Digital & Teknologi", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3" },
-    { id: 3, title: "Self Development", instructor: "Jane Smith", rating: 4.0, price: "Rp 150K", duration: "Lebih dari 8 Jam", category: "Pengembangan Diri", image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3" },
-    { id: 4, title: "Business Management", instructor: "Alice Johnson", rating: 4.2, price: "Rp 350K", duration: "4 - 8 Jam", category: "Bisnis Manajemen", image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3" },
-    { id: 5, title: "Graphic Design", instructor: "Bob Brown", rating: 4.8, price: "Rp 400K", duration: "Lebih dari 8 Jam", category: "Digital & Teknologi", image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3" },
-    { id: 6, title: "Project Management", instructor: "Charlie Davis", rating: 4.1, price: "Rp 250K", duration: "Kurang dari 4 Jam", category: "Bisnis Manajemen", image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixlib=rb-4.0.3" },
-    { id: 7, title: "Web Development", instructor: "David Evans", rating: 4.7, price: "Rp 450K", duration: "Lebih dari 8 Jam", category: "Digital & Teknologi", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3" },
-    { id: 8, title: "SEO Optimization", instructor: "Eve Foster", rating: 4.3, price: "Rp 300K", duration: "4 - 8 Jam", category: "Pemasaran", image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3" },
-    { id: 9, title: "Data Science", instructor: "Frank Green", rating: 4.6, price: "Rp 500K", duration: "Lebih dari 8 Jam", category: "Digital & Teknologi", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3" },
-  ];
+  // useEffect to fetch data from backend whenever filters change
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setLoading(true);
+      setError(null);
 
-  const filteredCourses = courses.filter((course) => {
-    return (
-      (category === 'Semua Kelas' || course.category === category) &&
-      (duration === 'Semua Durasi' || course.duration === duration) &&
-      course.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+      try {
+        // Build query parameters
+        const params = {};
+        if (category && category !== 'Semua Kelas') params.kategori_id = category;
+        if (duration && duration !== 'Semua Durasi') params.durasi = duration;
+        if (searchQuery) params.search = searchQuery;
+        if (sortBy && sortBy !== 'Urutkan') {
+          if (sortBy === 'Harga Rendah') params.sort_by = 'price';
+          if (sortBy === 'Harga Tinggi') params.sort_by = 'price';
+          if (sortBy === 'A to Z') params.sort_by = 'title';
+          if (sortBy === 'Z to A') params.sort_by = 'title';
+          if (sortBy === 'Rating Tertinggi') params.sort_by = 'rating';
+          if (sortBy === 'Rating Terendah') params.sort_by = 'rating';
+          params.sort_order = sortBy.includes('Tinggi') || sortBy === 'Z to A' ? 'desc' : 'asc';
+        }
 
-  const sortedCourses = filteredCourses.sort((a, b) => {
-    switch (sortBy) {
-      case 'Harga Rendah':
-        return a.price.localeCompare(b.price, undefined, { numeric: true });
-      case 'Harga Tinggi':
-        return b.price.localeCompare(a.price, undefined, { numeric: true });
-      case 'A to Z':
-        return a.title.localeCompare(b.title);
-      case 'Z to A':
-        return b.title.localeCompare(a.title);
-      case 'Rating Tertinggi':
-        return b.rating - a.rating;
-      case 'Rating Terendah':
-        return a.rating - b.rating;
-      default:
-        return 0;
-    }
-  });
+        // Fetch data from backend
+        const token = localStorage.getItem('token'); // Replace with your token retrieval logic
+        const response = await axios.get('http://localhost:3000/api/kategori-kelas', {
+          params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setBackendCourses(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message || 'Something went wrong');
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [category, duration, searchQuery, sortBy]);
 
   const handleSelectProduct = (product) => {
     navigate(`/detail-produk/${product.id}`, { state: product });
@@ -66,95 +70,55 @@ const SemuaProduk = () => {
           <h1 className="text-2xl font-bold text-gray-900">Koleksi Video Pembelajaran Unggulan</h1>
           <p className="text-gray-600 mt-2">Jelajahi Dunia Pengetahuan Melalui Pilihan Kami!</p>
         </div>
-        <div className="flex gap-6">
-          <div className="w-64 hidden lg:block">
-            <div className="bg-white rounded-lg p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="font-semibold">Filter</h2>
-                <button className="text-red-500 text-sm" onClick={() => {
-                  dispatch(setCategory('Semua Kelas'));
-                  dispatch(setDuration('Semua Durasi'));
-                  dispatch(setSearchQuery(''));
-                  dispatch(setSortBy('Urutkan'));
-                }}>Reset</button>
-              </div>
-              {categories.map((category) => (
-                <div key={category.id} className="mb-6">
-                  <h3 className="font-medium mb-3 flex items-center">
-                    {category.name}
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </h3>
-                  <div className="space-y-2">
-                    {category.items.map((item, index) => (
-                      <label key={index} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="form-checkbox text-green-500 rounded transition duration-300 ease-in-out transform checked:scale-110"
-                          checked={category.name === 'Bidang Studi' ? item === category : item === duration}
-                          onChange={() => {
-                            if (category.name === 'Bidang Studi') {
-                              dispatch(setCategory(item));
-                            } else {
-                              dispatch(setDuration(item));
-                            }
-                          }}
-                        />
-                        <span className="ml-2 text-sm text-gray-600">{item}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Filter, Sort, and Search UI */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Cari Kelas"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+              value={searchQuery}
+              onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+            />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="Cari Kelas"
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
-                  value={searchQuery}
-                  onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <select className="px-4 py-2 border border-gray-300 rounded-lg" value={sortBy} onChange={(e) => dispatch(setSortBy(e.target.value))}>
-                <option>Urutkan</option>
-                <option>Harga Rendah</option>
-                <option>Harga Tinggi</option>
-                <option>A to Z</option>
-                <option>Z to A</option>
-                <option>Rating Tertinggi</option>
-                <option>Rating Terendah</option>
-              </select>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  id={course.id}
-                  title={course.title}
-                  instructor={course.instructor}
-                  rating={course.rating}
-                  price={course.price}
-                  image={course.image}
-                  onClick={() => handleSelectProduct(course)}
-                />
-              ))}
-            </div>
-            <div className="flex justify-center mt-8 gap-2">
-              <button className="px-3 py-1 border rounded-lg hover:bg-gray-50">&lt;</button>
-              {[1, 2, 3, 4, 5, 6].map((page) => (
-                <button key={page} className={`px-3 py-1 rounded-lg ${page === 1 ? 'bg-orange-500 text-white' : 'hover:bg-gray-50'}`}>{page}</button>
-              ))}
-              <button className="px-3 py-1 border rounded-lg hover:bg-gray-50">&gt;</button>
-            </div>
+          {/* Sort Dropdown */}
+          <select className="px-4 py-2 border border-gray-300 rounded-lg" value={sortBy} onChange={(e) => dispatch(setSortBy(e.target.value))}>
+            <option>Urutkan</option>
+            <option>Harga Rendah</option>
+            <option>Harga Tinggi</option>
+            <option>A to Z</option>
+            <option>Z to A</option>
+            <option>Rating Tertinggi</option>
+            <option>Rating Terendah</option>
+          </select>
+        </div>
+        {/* Content */}
+        {loading ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div className="text-red-500">{error}</div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {backendCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                id={course.id}
+                title={course.nama_kelas}
+                instructor={course.instructor}
+                rating={course.rating}
+                price={course.price}
+                image={course.image}
+                onClick={() => handleSelectProduct(course)}
+              />
+            ))}
           </div>
+        )}
+        <div className="flex justify-center mt-8 gap-2">
+          {/* Pagination buttons (if needed) */}
         </div>
       </main>
       {/* Footer */}

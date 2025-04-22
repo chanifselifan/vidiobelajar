@@ -1,10 +1,38 @@
+import { db } from '../server.js';
+
 // Mendapatkan semua data kelas
-export const getAllKelas = (callback) => {
-    db.query('SELECT * FROM kelas', (err, results) => {
+export const getAllKelas = (req, res) => {
+    let query = 'SELECT * FROM kelas';
+    const conditions = [];
+    const values = [];
+    const { category, search, sortBy, sortOrder } = req.query;
+
+    if (category) {
+        conditions.push('kategori_kelas_id = ?');
+        values.push(category);
+    }
+
+    if (search) {
+        conditions.push('nama_kelas LIKE ?');
+        values.push(`%${search}%`);
+    }
+
+    if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    if (sortBy) {
+        const order = sortOrder && sortOrder.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+        query += ` ORDER BY ${sortBy} ${order}`;
+    }
+
+    db.query(query, values, (err, results) => {
         if (err) {
-            return callback(err, null);
+            console.error('Error fetching kelas:', err);
+            res.status(500).json({ error: 'Gagal mendapatkan data kelas' });
+        } else {
+            res.json(results);
         }
-        callback(null, results);
     });
 };
 

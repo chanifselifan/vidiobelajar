@@ -1,3 +1,4 @@
+/* Ensure Tailwind CSS IntelliSense recognizes @tailwind rules */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

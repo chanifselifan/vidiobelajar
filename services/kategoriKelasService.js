@@ -1,11 +1,35 @@
+import { db } from '../db.js';
+
 // Mendapatkan semua data kategori_kelas
-export const getAllKategoriKelas = (callback) => {
-    db.query('SELECT * FROM kategori_kelas', (err, results) => {
-        if (err) {
-            return callback(err, null);
-        }
-        callback(null, results);
-    });
+export const getAllKategoriKelas = (filters, callback) => {
+  let query = 'SELECT * FROM kategori_kelas';
+  const queryParams = [];
+
+  // Apply filters
+  if (filters.kategori_id) {
+    query += ' WHERE kategori_id = ?';
+    queryParams.push(filters.kategori_id);
+  }
+
+  if (filters.search) {
+    query += queryParams.length ? ' AND' : ' WHERE';
+    query += ' nama_kelas LIKE ?';
+    queryParams.push(`%${filters.search}%`);
+  }
+
+  if (filters.sort_by) {
+    query += ` ORDER BY ${filters.sort_by}`;
+    if (filters.sort_order) {
+      query += ` ${filters.sort_order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'}`;
+    }
+  }
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      return callback(err, null);
+    }
+    callback(null, results);
+  });
 };
 
 // Mendapatkan data kategori_kelas berdasarkan ID

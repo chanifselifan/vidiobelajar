@@ -6,9 +6,9 @@ import GoogleIcon from '../../img/logos_google-icon.png';
 import axios from 'axios';
 
 const Login = () => {
-  const API_URL = "/api/users";
+  const API_URL = "http://localhost:3000/api/auth/login"; // Gunakan URL absolut
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -23,22 +23,20 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    try {
-      const response = await axios.get(`${API_URL}/${email}`);
-      if (response.status === 404) {
-        throw new Error('User not found');
-      }
-      const userData = response.data;
+    console.log('Sending request to:', API_URL); // Debug URL
+    console.log('Request body:', { identifier, password }); // Debug data
 
-      if (userData && userData.password === password) {
+    try {
+        const response = await axios.post(API_URL, { identifier, password }, {
+            headers: { 'Content-Type': 'application/json' }, // Pastikan header dikirim
+        });
+        console.log('Response:', response.data); // Debug response
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
+        localStorage.setItem('token', response.data.token);
         navigate('/');
-      } else {
-        setError('Email atau password salah');
-      }
     } catch (error) {
-      setError('User belum terdaftar');
+        console.error('Error response:', error.response); // Debug error
+        setError(error.response?.data?.message || 'Login gagal.');
     }
   };
 
@@ -72,14 +70,14 @@ const Login = () => {
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-sm sm:text-base font-medium text-gray-700">
-                  E-Mail <span className="text-red-500">*</span>
+                  Email atau Username <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm sm:text-base focus:border-green-500 focus:outline-none focus:ring-green-500 transition-colors duration-300"
-                  placeholder="user@example.com"
+                  placeholder="Email atau Username"
                   required
                 />
               </div>
@@ -149,3 +147,4 @@ const Login = () => {
 }
 
 export default Login;
+

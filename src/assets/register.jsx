@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import NavLogin from '../NavLogin';
-import { db } from '../reducers/firebase';
-import { collection, addDoc } from "firebase/firestore";
 
 function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     namaLengkap: '',
+    username: '',
     email: '',
-    jenisKelamin: '',
+    gender: '',
     noHp: '',
     password: '',
     konfirmasiPassword: ''
@@ -26,40 +25,51 @@ function Register() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRegister = async (e) => {
+    e.preventDefault(); // Mencegah perilaku default submit form
     setError('');
 
     // Validasi
-    if (!formData.namaLengkap || !formData.email || !formData.password || !formData.konfirmasiPassword) {
-      setError('Semua field harus diisi');
-      return;
+    if (!formData.namaLengkap || !formData.username || !formData.email || !formData.password || !formData.konfirmasiPassword || !formData.gender || !formData.noHp) {
+        setError('Semua field harus diisi');
+        return;
     }
 
     if (formData.password !== formData.konfirmasiPassword) {
-      setError('Password tidak cocok');
-      return;
+        setError('Password tidak cocok');
+        return;
     }
 
     try {
-      // Simpan data user ke Firestore
-      const docRef = await addDoc(collection(db, "users"), {
-        namaLengkap: formData.namaLengkap,
-        email: formData.email,
-        jenisKelamin: formData.jenisKelamin,
-        noHp: formData.noHp
-      });
+        // Kirim POST request ke backend API
+        const response = await fetch('http://localhost:3000/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                nama: formData.namaLengkap,
+                username: formData.username,
+                email: formData.email,
+                password: formData.password,
+                gender: formData.gender,
+                no_hp: formData.noHp,
+            }),
+        });
 
-      // Simpan data user ke localStorage
-      localStorage.setItem('userData', JSON.stringify(formData));
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', formData.email);
-      localStorage.setItem('userId', docRef.id);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Registrasi berhasil:', data);
 
-      // Redirect ke home
-      navigate('/');
-    } catch (err) {
-      setError('Terjadi kesalahan saat mendaftar');
+            // Redirect ke halaman login atau home
+            navigate('/');
+        } else {
+            const errorData = await response.json();
+            setError(errorData.error || 'Registrasi gagal');
+        }
+    } catch (error) {
+        console.error('Terjadi kesalahan:', error);
+        setError('Terjadi kesalahan saat menghubungi server');
     }
   };
 
@@ -86,7 +96,7 @@ function Register() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleRegister} className="space-y-6">
               {/* Nama Lengkap */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -96,6 +106,21 @@ function Register() {
                   type="text"
                   name="namaLengkap"
                   value={formData.namaLengkap}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-green-500"
+                  required
+                />
+              </div>
+
+              {/* Username */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Username <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-green-500"
                   required
@@ -123,8 +148,8 @@ function Register() {
                   Jenis Kelamin <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="jenisKelamin"
-                  value={formData.jenisKelamin}
+                  name="gender"
+                  value={formData.gender}
                   onChange={handleChange}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-green-500"
                   required

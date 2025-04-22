@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import CourseCard from './CourseCard.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NavLogin from '../NavLogin';
+import { useDispatch } from 'react-redux';
+import { setCategory } from '../reducers/filterSlice';
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   // Data untuk cards
   const courses = [
     {
@@ -92,6 +97,12 @@ const Home = () => {
     'Bisnis'
   ];
 
+  const handleCategoryClick = (category) => {
+    console.log('Setting category to:', category); // Tambahkan log untuk memeriksa nilai category
+    dispatch(setCategory(category)); // Set kategori di Redux state
+    navigate('/semua-produk'); // Arahkan ke halaman SemuaProduk
+  };
+
   return (
     <div className="min-h-screen">
       <NavLogin />
@@ -142,18 +153,17 @@ const Home = () => {
           {/* Kategori Navigation */}
           <div className="flex flex-wrap gap-4 mb-8 px-4">
             {categories.map((category) => (
-              <Link
+              <button
                 key={category}
-                to="/"
                 className={`px-4 py-2 rounded-full transition-all duration-300 ${
                   activeCategory === category
                     ? 'bg-orange-500 text-white'
                     : 'text-gray-600 hover:text-orange-500'
                 }`}
-                onClick={() => setActiveCategory(category)}
+                onClick={() => handleCategoryClick(category)}
               >
                 {category}
-              </Link>
+              </button>
             ))}
           </div>
 

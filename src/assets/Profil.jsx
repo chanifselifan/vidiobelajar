@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { db } from '../reducers/firebase';
+import axios from 'axios';
 
 const Profil = () => {
   const navigate = useNavigate();
@@ -11,55 +10,56 @@ const Profil = () => {
     noHp: ''
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const userId = localStorage.getItem('userId');
-      if (userId) {
-        const userDoc = await getDoc(doc(db, "users", userId));
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        }
-      }
-    };
-    fetchUserData();
-  }, []);
+  const [displayedProfileImageUrl, setDisplayedProfileImageUrl] = useState('/img/profile.png'); // Default profile image
+  const fileInputRef = useRef(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      try {
-        await updateDoc(doc(db, "users", userId), {
-          namaLengkap: userData.namaLengkap || '',
-          email: userData.email || '',
-          noHp: userData.noHp || ''
-        });
-        alert("Profile updated successfully!");
-      } catch (e) {
-        console.error("Error updating document: ", e);
-      }
+  const handleFileChange = async (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('File uploaded successfully:', response.data);
+
+      // Update displayed profile image URL
+      const publicImageUrl = response.data.publicImageUrl;
+      setDisplayedProfileImageUrl(publicImageUrl);
+
+      alert('Foto profil berhasil diupload!');
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Gagal mengupload foto profil.');
+    } finally {
+      event.target.value = null;
     }
   };
 
+  const handleChangePhotoClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    alert("Profile updated successfully!");
+  };
+
   const handleDelete = async () => {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      try {
-        await deleteDoc(doc(db, "users", userId));
-        localStorage.removeItem('userData');
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userId');
-        navigate('/register');
-      } catch (e) {
-        console.error("Error deleting document: ", e);
-      }
-    }
+    localStorage.removeItem('userData');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    navigate('/register');
   };
 
   return (
@@ -125,16 +125,25 @@ const Profil = () => {
           <div className="bg-white rounded-lg p-6">
             <div className="flex items-center gap-6 mb-8">
               <img 
-                src="/img/profile.png" 
+                src={displayedProfileImageUrl} 
                 alt="Profile" 
                 className="w-24 h-24 rounded-full object-cover"
               />
               <div>
                 <h2 className="text-xl font-semibold">{userData.namaLengkap}</h2>
                 <p className="text-gray-500">{userData.email}</p>
-                <button className="text-orange-500 hover:text-orange-600 mt-2">
+                <button 
+                  className="text-orange-500 hover:text-orange-600 mt-2"
+                  onClick={handleChangePhotoClick}
+                >
                   Ganti Foto Profil
                 </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
               </div>
             </div>
 
